@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/transaction")
+@RequestMapping("/api/transactions")
 public class TransactionController {
-    TransactionService transactionService;
+    private final TransactionService transactionService;
     public TransactionController(TransactionService service){
         this.transactionService = service;
     }
@@ -23,13 +25,24 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id){
         Optional<TransactionModel> transactionModel = transactionService.getTransactionById(id);
         if(transactionModel.isPresent()){
-            return ResponseEntity.ok(transactionModel.get().toDTO());
+            return ResponseEntity.ok(new TransactionDTO(transactionModel.get()));
         }
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping()
+    public ResponseEntity<List<TransactionDTO>> getAllTransactions(){
+        List<TransactionDTO> listOfTransactions = transactionService
+                .getAll()
+                .stream()
+                .map(TransactionDTO::new).
+                toList();
+        return ResponseEntity.ok(listOfTransactions);
+    }
+
     @PostMapping
     public ResponseEntity<Void> postTransaction(@RequestBody TransactionDTO transactionDTO){
+        transactionDTO.setId(null);
         TransactionModel transactionModel = transactionDTO.toModel();
         transactionModel = transactionService.saveTransaction(transactionModel);
         URI location = ServletUriComponentsBuilder
@@ -41,15 +54,15 @@ public class TransactionController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<TransactionModel> putTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<TransactionDTO> putTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
         TransactionModel transactionModel = transactionDTO.toModel();
         Optional<TransactionModel> existingModel = transactionService.getTransactionById(id);
-        if (existingModel.isPresent() && existingModel.get().getId() == transactionModel.getId()) {
+        if (existingModel.isPresent() && Objects.equals(existingModel.get().getId(), transactionModel.getId())) {
             transactionModel = transactionService.saveTransaction(transactionModel);
-                return ResponseEntity.ok(transactionModel);
+            return ResponseEntity.ok(new TransactionDTO(transactionModel));
         }
-        else if (existingModel.isPresent() && existingModel.get().getId() != transactionModel.getId()) {
-                return ResponseEntity.badRequest().build();
+        else if (existingModel.isPresent() && !Objects.equals(existingModel.get().getId(), transactionModel.getId())) {
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.notFound().build();
     }

@@ -3,7 +3,6 @@ package org.example.personalfinancemanagerbe.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.personalfinancemanagerbe.dtos.TransactionDTO;
 import org.example.personalfinancemanagerbe.util.TransactionType;
 
 import java.time.LocalDate;

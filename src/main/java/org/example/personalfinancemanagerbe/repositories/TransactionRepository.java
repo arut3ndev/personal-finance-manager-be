@@ -6,19 +6,20 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class TransactionRepository {
-    HashMap<Long, TransactionModel> database;
+    ConcurrentHashMap<Long, TransactionModel> database;
     private long idCounter;
     public TransactionRepository(){
-        this.database = new HashMap<>();
+        this.database = new ConcurrentHashMap<>();
         this.idCounter = 1;
     }
 
     public TransactionModel save(TransactionModel modelToSave){
         if(modelToSave != null){
-            if(database.get(modelToSave.getId()) == null){
+            if(modelToSave.getId() == null || database.get(modelToSave.getId()) == null){
                 modelToSave.setId(idCounter);
                 database.put(idCounter, modelToSave);
                 idCounter++;
@@ -26,6 +27,7 @@ public class TransactionRepository {
             }
             else{
                 database.put(modelToSave.getId(), modelToSave);
+                return modelToSave;
             }
         }
         return null;

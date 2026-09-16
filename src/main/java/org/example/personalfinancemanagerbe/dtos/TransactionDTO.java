@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 public class TransactionDTO {
-    private long id;
-    private int amount;
+    private Long id;
+    private Integer amount;
     private String description;
     private LocalDate date;
     private TransactionType type;
