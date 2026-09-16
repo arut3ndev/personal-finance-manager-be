@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 public class TransactionDTO {
     private Long id;
-    private Integer amount;
+    private Double amount;
     private String description;
     private LocalDate date;
     private TransactionType type;

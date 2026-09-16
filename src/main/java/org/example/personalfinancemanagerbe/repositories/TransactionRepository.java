@@ -3,34 +3,30 @@ package org.example.personalfinancemanagerbe.repositories;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class TransactionRepository {
-    ConcurrentHashMap<Long, TransactionModel> database;
-    private long idCounter;
+    private final ConcurrentHashMap<Long, TransactionModel> database;
+    private final AtomicLong idCounter;
     public TransactionRepository(){
         this.database = new ConcurrentHashMap<>();
-        this.idCounter = 1;
+        this.idCounter = new AtomicLong(1);
     }
 
     public TransactionModel save(TransactionModel modelToSave){
-        if(modelToSave != null){
-            if(modelToSave.getId() == null || database.get(modelToSave.getId()) == null){
-                modelToSave.setId(idCounter);
-                database.put(idCounter, modelToSave);
-                idCounter++;
-                return modelToSave;
-            }
-            else{
-                database.put(modelToSave.getId(), modelToSave);
-                return modelToSave;
-            }
+        if (modelToSave.getId() == null || !database.containsKey(modelToSave.getId())) {
+            long newId = idCounter.getAndIncrement();
+            modelToSave.setId(newId);
+            database.put(newId, modelToSave);
         }
-        return null;
+        else {
+            database.put(modelToSave.getId(), modelToSave);
+        }
+        return modelToSave;
     }
 
     public Optional<TransactionModel> findById(long id){
