@@ -13,16 +13,26 @@ import java.time.LocalDate;
 @Data
 public class TransactionDTO {
     private long id;
+    private int amount;
     private String description;
     private LocalDate date;
     private TransactionType type;
 
     public TransactionModel toModel(){
         return new TransactionModel(
-                this.getId(),
-                this.getDescription(),
-                this.getDate(),
-                this.getType()
+            this.getId(),
+            this.getAmount(),
+            this.getDescription(),
+            this.getDate(),
+            this.getType()
         );
+    }
+
+    public TransactionDTO(TransactionModel transactionModel){
+        this.setId(transactionModel.getId());
+        this.setAmount(transactionModel.getAmount());
+        this.setDescription(transactionModel.getDescription());
+        this.setDate(transactionModel.getDate());
+        this.setType(transactionModel.getType());
     }
 }
