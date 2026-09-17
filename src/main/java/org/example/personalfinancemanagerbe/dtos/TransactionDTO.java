@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.example.personalfinancemanagerbe.util.TransactionType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @Data
 public class TransactionDTO {
     private Long id;
-    private Double amount;
+    private BigDecimal amount;
     private String description;
     private LocalDate date;
     private TransactionType type;
