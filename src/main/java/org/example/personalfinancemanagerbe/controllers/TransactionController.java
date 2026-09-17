@@ -55,16 +55,14 @@ public class TransactionController {
 
     @PutMapping("{id}")
     public ResponseEntity<TransactionDTO> putTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
-        TransactionModel transactionModel = transactionDTO.toModel();
         Optional<TransactionModel> existingModel = transactionService.getTransactionById(id);
-        if (existingModel.isPresent() && Objects.equals(existingModel.get().getId(), transactionModel.getId())) {
-            transactionModel = transactionService.saveTransaction(transactionModel);
-            return ResponseEntity.ok(new TransactionDTO(transactionModel));
+        if(existingModel.isEmpty()){
+            return ResponseEntity.notFound().build();
         }
-        else if (existingModel.isPresent() && !Objects.equals(existingModel.get().getId(), transactionModel.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.notFound().build();
+        TransactionModel transactionModel = transactionDTO.toModel();
+        transactionModel.setId(id);
+        transactionModel = transactionService.saveTransaction(transactionModel);
+        return ResponseEntity.ok(new TransactionDTO(transactionModel));
     }
 
     @DeleteMapping("{id}")

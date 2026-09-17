@@ -35,7 +35,7 @@ public class TransactionModel {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    CategoryModel category;
+    private CategoryModel category;
 
     @Override
     public boolean equals(Object o) {

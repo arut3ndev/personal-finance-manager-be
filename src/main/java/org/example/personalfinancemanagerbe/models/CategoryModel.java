@@ -29,8 +29,8 @@ public class CategoryModel {
     @Column(name="category_description", nullable = false, length = 256)
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    List<TransactionModel> transaction;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.DETACH, orphanRemoval = false)
+    private List<TransactionModel> transactions;
 
     @Override
     public boolean equals(Object o) {
@@ -39,7 +39,7 @@ public class CategoryModel {
         Class<?> thisClass = Hibernate.getClass(this);
         Class<?> otherClass = Hibernate.getClass(o);
         if (thisClass != otherClass) return false;
-        TransactionModel that = (TransactionModel) o;
+        CategoryModel that = (CategoryModel) o;
         return id != null && Objects.equals(id, that.getId());
     }
 

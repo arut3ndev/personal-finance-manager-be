@@ -18,6 +18,7 @@ public class TransactionDTO {
     private String description;
     private LocalDate date;
     private TransactionType type;
+    private CategoryDTO parentCategory;
 
     public TransactionModel toModel(){
         return new TransactionModel(
@@ -26,7 +27,7 @@ public class TransactionDTO {
             this.getDescription(),
             this.getDate(),
             this.getType(),
-    null
+            null
         );
     }
 
@@ -36,5 +37,6 @@ public class TransactionDTO {
         this.setDescription(transactionModel.getDescription());
         this.setDate(transactionModel.getDate());
         this.setType(transactionModel.getType());
+        this.setParentCategory(new CategoryDTO(transactionModel.getCategory()));
     }
 }
