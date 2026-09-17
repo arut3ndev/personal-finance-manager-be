@@ -1,16 +1,15 @@
 package org.example.personalfinancemanagerbe.controllers;
 
+import org.example.personalfinancemanagerbe.dtos.CategoryDTO;
 import org.example.personalfinancemanagerbe.dtos.TransactionDTO;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.example.personalfinancemanagerbe.services.TransactionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -21,7 +20,7 @@ public class TransactionController {
         this.transactionService = service;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id){
         Optional<TransactionModel> transactionModel = transactionService.getTransactionById(id);
         if(transactionModel.isPresent()){
@@ -53,7 +52,7 @@ public class TransactionController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<TransactionDTO> putTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
         Optional<TransactionModel> existingModel = transactionService.getTransactionById(id);
         if(existingModel.isEmpty()){
@@ -65,7 +64,16 @@ public class TransactionController {
         return ResponseEntity.ok(new TransactionDTO(transactionModel));
     }
 
-    @DeleteMapping("{id}")
+    @PutMapping("/{id}/category")
+    public ResponseEntity<Void> attachCategoryToTransaction(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO){
+        TransactionModel updatedModel = transactionService.attachCategoryToTransaction(id, categoryDTO.toModel());
+        if(updatedModel != null){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTransaction(@PathVariable Long id){
         Optional<TransactionModel> transactionModel = transactionService.getTransactionById(id);
         if(transactionModel.isPresent()){
