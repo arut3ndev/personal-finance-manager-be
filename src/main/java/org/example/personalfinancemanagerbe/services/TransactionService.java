@@ -1,5 +1,6 @@
 package org.example.personalfinancemanagerbe.services;
 
+import jakarta.transaction.Transactional;
 import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.example.personalfinancemanagerbe.repositories.TransactionRepository;
@@ -29,6 +30,7 @@ public class TransactionService {
         return repository.save(modelToSave);
     }
 
+    @Transactional
     public TransactionModel attachCategoryToTransaction(long transactionId, long categoryId){
         Optional<TransactionModel> transactionModel = getTransactionById(transactionId);
         Optional<CategoryModel> categoryModel = categoryService.getCategoryById(categoryId);
