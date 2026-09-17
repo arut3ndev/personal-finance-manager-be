@@ -25,7 +25,8 @@ public class TransactionDTO {
             this.getAmount(),
             this.getDescription(),
             this.getDate(),
-            this.getType()
+            this.getType(),
+    null
         );
     }
 
