@@ -23,7 +23,7 @@ public class CategoryModel {
     @Column(name = "category_id")
     private Long id;
 
-    @Column(name = "category_name", nullable = false, length = 32)
+    @Column(name = "category_name", nullable = false, unique = true, length = 32)
     private String name;
 
     @Column(name="category_description", nullable = false, length = 256)

@@ -64,9 +64,9 @@ public class TransactionController {
         return ResponseEntity.ok(new TransactionDTO(transactionModel));
     }
 
-    @PutMapping("/{id}/category")
-    public ResponseEntity<Void> attachCategoryToTransaction(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO){
-        TransactionModel updatedModel = transactionService.attachCategoryToTransaction(id, categoryDTO.toModel());
+    @PutMapping("/{transactionId}/category/{categoryId}")
+    public ResponseEntity<Void> attachCategoryToTransaction(@PathVariable Long transactionId, @PathVariable Long categoryId){
+        TransactionModel updatedModel = transactionService.attachCategoryToTransaction(transactionId, categoryId);
         if(updatedModel != null){
             return ResponseEntity.noContent().build();
         }
