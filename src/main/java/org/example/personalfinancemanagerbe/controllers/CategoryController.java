@@ -1,9 +1,9 @@
 package org.example.personalfinancemanagerbe.controllers;
 
-import org.example.personalfinancemanagerbe.dtos.CategoryDTO;
-import org.example.personalfinancemanagerbe.dtos.TransactionDTO;
+import jakarta.validation.Valid;
+import org.example.personalfinancemanagerbe.dtos.CategoryRequestDTO;
+import org.example.personalfinancemanagerbe.dtos.CategoryResponseDTO;
 import org.example.personalfinancemanagerbe.models.CategoryModel;
-import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.example.personalfinancemanagerbe.services.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,26 +23,25 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories(){
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(){
         return ResponseEntity.ok(categoryService.getAllCategories()
                 .stream()
-                .map(CategoryDTO::new)
+                .map(CategoryResponseDTO::new)
                 .toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id){
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id){
         Optional<CategoryModel> categoryModelOptional = categoryService.getCategoryById(id);
         if(categoryModelOptional.isPresent()){
-            return ResponseEntity.ok(new CategoryDTO(categoryModelOptional.get()));
+            return ResponseEntity.ok(new CategoryResponseDTO(categoryModelOptional.get()));
         }
         return ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<Void> createCategory(@RequestBody CategoryDTO categoryDTO){
-        categoryDTO.setId(null);
-        CategoryModel categoryModel = categoryDTO.toModel();
+    public ResponseEntity<Void> createCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO){
+        CategoryModel categoryModel = categoryRequestDTO.toModel();
         categoryModel = categoryService.saveCategory(categoryModel);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -53,15 +52,15 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> putCategory(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO){
+    public ResponseEntity<CategoryResponseDTO> putCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestDTO categoryRequestDTO){
         Optional<CategoryModel> categoryModelOptional = categoryService.getCategoryById(id);
         if(categoryModelOptional.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        categoryDTO.setId(id);
-        CategoryModel categoryModel = categoryDTO.toModel();
+        CategoryModel categoryModel = categoryRequestDTO.toModel();
+        categoryModel.setId(id);
         categoryModel = categoryService.saveCategory(categoryModel);
-        return ResponseEntity.ok(new CategoryDTO(categoryModel));
+        return ResponseEntity.ok(new CategoryResponseDTO(categoryModel));
     }
 
     @DeleteMapping("/{id}")
