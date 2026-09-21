@@ -1,5 +1,6 @@
 package org.example.personalfinancemanagerbe.dtos;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,33 +13,20 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TransactionDTO {
-    private Long id;
+public class TransactionResponseDTO {
+    private Long transactionId;
     private BigDecimal amount;
     private String description;
     private LocalDate date;
     private TransactionType type;
-    private CategoryDTO category;
+    private Long categoryId;
 
-    public TransactionModel toModel(){
-        return new TransactionModel(
-            this.getId(),
-            this.getAmount(),
-            this.getDescription(),
-            this.getDate(),
-            this.getType(),
-            this.getCategory() == null ? null : this.getCategory().toModel()
-        );
-    }
-
-    public TransactionDTO(TransactionModel transactionModel){
-        this.setId(transactionModel.getId());
+    public TransactionResponseDTO(TransactionModel transactionModel){
+        this.setTransactionId(transactionModel.getId());
         this.setAmount(transactionModel.getAmount());
         this.setDescription(transactionModel.getDescription());
         this.setDate(transactionModel.getDate());
         this.setType(transactionModel.getType());
-        if(transactionModel.getCategory() != null){
-            this.setCategory(new CategoryDTO(transactionModel.getCategory()));
-        }
+        this.setCategoryId(transactionModel.getCategory() == null ? null : transactionModel.getCategory().getId());
     }
 }
