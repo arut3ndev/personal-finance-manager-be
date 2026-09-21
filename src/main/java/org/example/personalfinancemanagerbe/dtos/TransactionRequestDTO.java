@@ -1,5 +1,6 @@
 package org.example.personalfinancemanagerbe.dtos;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -17,9 +18,10 @@ import java.time.LocalDate;
 @Data
 public class TransactionRequestDTO {
     @NotNull
-    @Positive
+    @Positive()
+    @Digits(integer = 16, fraction = 2)
     private BigDecimal amount;
-    @Size(max = 255)
+    @Size(max = 256)
     private String description;
     @NotNull
     private LocalDate date;

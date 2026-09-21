@@ -17,11 +17,6 @@ public class CategoryRequestDTO {
     @Size(max = 256)
     private String description;
 
-    public CategoryRequestDTO(CategoryModel categoryModel){
-        this.name = categoryModel.getName();
-        this.description = categoryModel.getDescription();
-    }
-
     public CategoryModel toModel(){
         return new CategoryModel(null, name, description, null);
     }

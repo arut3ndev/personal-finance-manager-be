@@ -49,6 +49,13 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<Void> postTransaction(@Valid @RequestBody TransactionRequestDTO transactionRequestDTO){
         TransactionModel transactionModel = transactionRequestDTO.toModel();
+        if(transactionRequestDTO.getCategoryId() != null){
+            Optional<CategoryModel> categoryModel = categoryService.getCategoryById(transactionRequestDTO.getCategoryId());
+            if(categoryModel.isEmpty()){
+                return ResponseEntity.notFound().build();
+            }
+            transactionModel.setCategory(categoryModel.get());
+        }
         transactionModel = transactionService.saveTransaction(transactionModel);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -59,7 +66,7 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransactionResponseDTO> putTransaction(@PathVariable long id,@Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
+    public ResponseEntity<TransactionResponseDTO> putTransaction(@PathVariable Long id, @Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
         Optional<TransactionModel> existingModel = transactionService.getTransactionById(id);
         if(existingModel.isEmpty()){
             return ResponseEntity.notFound().build();

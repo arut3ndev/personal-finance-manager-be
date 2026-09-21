@@ -11,7 +11,6 @@ import org.example.personalfinancemanagerbe.models.CategoryModel;
 @Data
 public class CategoryResponseDTO {
     private Long id;
-    @NotNull
     private String name;
     private String description;
 

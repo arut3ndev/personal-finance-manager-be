@@ -26,7 +26,7 @@ public class CategoryModel {
     @Column(name = "category_name", nullable = false, unique = true, length = 32)
     private String name;
 
-    @Column(name="category_description", nullable = false, length = 256)
+    @Column(name="category_description", length = 256)
     private String description;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.DETACH, orphanRemoval = false)
