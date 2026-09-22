@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class TransactionRequestDTO {
     @NotNull
     @Positive()
-    @Digits(integer = 16, fraction = 2)
+    @Digits(integer = 14, fraction = 2)
     private BigDecimal amount;
     @Size(max = 256)
     private String description;
