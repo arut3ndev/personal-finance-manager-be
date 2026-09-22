@@ -1,8 +1,11 @@
 package org.example.personalfinancemanagerbe.controllers;
 
-import org.example.personalfinancemanagerbe.dtos.CategoryDTO;
-import org.example.personalfinancemanagerbe.dtos.TransactionDTO;
+import jakarta.validation.Valid;
+import org.example.personalfinancemanagerbe.dtos.TransactionRequestDTO;
+import org.example.personalfinancemanagerbe.dtos.TransactionResponseDTO;
+import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
+import org.example.personalfinancemanagerbe.services.CategoryService;
 import org.example.personalfinancemanagerbe.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,34 +18,44 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
+
     private final TransactionService transactionService;
-    public TransactionController(TransactionService service){
+    private final CategoryService categoryService;
+
+    public TransactionController(TransactionService service, CategoryService categoryService){
         this.transactionService = service;
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id){
+    public ResponseEntity<TransactionResponseDTO> getTransaction(@PathVariable Long id){
         Optional<TransactionModel> transactionModel = transactionService.getTransactionById(id);
         if(transactionModel.isPresent()){
-            return ResponseEntity.ok(new TransactionDTO(transactionModel.get()));
+            return ResponseEntity.ok(new TransactionResponseDTO(transactionModel.get()));
         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping()
-    public ResponseEntity<List<TransactionDTO>> getAllTransactions(){
-        List<TransactionDTO> listOfTransactions = transactionService
+    public ResponseEntity<List<TransactionResponseDTO>> getAllTransactions(){
+        List<TransactionResponseDTO> listOfTransactions = transactionService
                 .getAll()
                 .stream()
-                .map(TransactionDTO::new).
+                .map(TransactionResponseDTO::new).
                 toList();
         return ResponseEntity.ok(listOfTransactions);
     }
 
     @PostMapping
-    public ResponseEntity<Void> postTransaction(@RequestBody TransactionDTO transactionDTO){
-        transactionDTO.setId(null);
-        TransactionModel transactionModel = transactionDTO.toModel();
+    public ResponseEntity<Void> postTransaction(@Valid @RequestBody TransactionRequestDTO transactionRequestDTO){
+        TransactionModel transactionModel = transactionRequestDTO.toModel();
+        if(transactionRequestDTO.getCategoryId() != null){
+            Optional<CategoryModel> categoryModel = categoryService.getCategoryById(transactionRequestDTO.getCategoryId());
+            if(categoryModel.isEmpty()){
+                return ResponseEntity.notFound().build();
+            }
+            transactionModel.setCategory(categoryModel.get());
+        }
         transactionModel = transactionService.saveTransaction(transactionModel);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -53,15 +66,22 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransactionDTO> putTransaction(@PathVariable long id, @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<TransactionResponseDTO> putTransaction(@PathVariable Long id, @Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
         Optional<TransactionModel> existingModel = transactionService.getTransactionById(id);
         if(existingModel.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        TransactionModel transactionModel = transactionDTO.toModel();
+        TransactionModel transactionModel = transactionRequestDTO.toModel();
         transactionModel.setId(id);
+        if(transactionRequestDTO.getCategoryId() != null){
+            Optional<CategoryModel> categoryModel = categoryService.getCategoryById(transactionRequestDTO.getCategoryId());
+            if(categoryModel.isEmpty()){
+                return ResponseEntity.notFound().build();
+            }
+            transactionModel.setCategory(categoryModel.get());
+        }
         transactionModel = transactionService.saveTransaction(transactionModel);
-        return ResponseEntity.ok(new TransactionDTO(transactionModel));
+        return ResponseEntity.ok(new TransactionResponseDTO(transactionModel));
     }
 
     @PutMapping("/{transactionId}/category/{categoryId}")
