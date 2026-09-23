@@ -1,8 +1,11 @@
 package org.example.personalfinancemanagerbe.services;
 
+import org.example.personalfinancemanagerbe.exceptions.InvalidReferenceException;
+import org.example.personalfinancemanagerbe.exceptions.NotFoundException;
 import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +18,28 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Optional<CategoryModel> getCategoryById(Long id){
-        return categoryRepository.findById(id);
+    public CategoryModel getCategoryById(Long id){
+        Optional<CategoryModel> categoryModelOptional = categoryRepository.findById(id);
+        if(categoryModelOptional.isEmpty()){
+            throw new NotFoundException("Category", id);
+        }
+        return categoryModelOptional.get();
+    }
+
+    public CategoryModel getReferenceCategoryById(Long id){
+        Optional<CategoryModel> categoryModelOptional = categoryRepository.findById(id);
+        if(categoryModelOptional.isEmpty()){
+            throw new InvalidReferenceException("Category", id);
+        }
+        return categoryModelOptional.get();
+    }
+
+    @Transactional
+    public CategoryModel updateCategory(CategoryModel updateDummy, Long id){
+        CategoryModel updatedCategoryModel = getCategoryById(id);
+        updatedCategoryModel.setName(updateDummy.getName());
+        updatedCategoryModel.setDescription(updateDummy.getDescription());
+        return updatedCategoryModel;
     }
 
     public List<CategoryModel> getAllCategories(){
