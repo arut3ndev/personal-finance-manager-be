@@ -11,7 +11,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -32,11 +31,8 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id){
-        Optional<CategoryModel> categoryModelOptional = categoryService.getCategoryById(id);
-        if(categoryModelOptional.isPresent()){
-            return ResponseEntity.ok(new CategoryResponseDTO(categoryModelOptional.get()));
-        }
-        return ResponseEntity.notFound().build();
+        CategoryModel categoryModel = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(new CategoryResponseDTO(categoryModel));
     }
 
     @PostMapping
@@ -53,23 +49,14 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> putCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestDTO categoryRequestDTO){
-        Optional<CategoryModel> categoryModelOptional = categoryService.getCategoryById(id);
-        if(categoryModelOptional.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        CategoryModel categoryModel = categoryRequestDTO.toModel();
-        categoryModel.setId(id);
-        categoryModel = categoryService.saveCategory(categoryModel);
-        return ResponseEntity.ok(new CategoryResponseDTO(categoryModel));
+        return ResponseEntity.ok(new CategoryResponseDTO(
+                categoryService.updateCategory(categoryRequestDTO.toModel(), id)
+        ));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id){
-        Optional<CategoryModel> categoryModelOptional = categoryService.getCategoryById(id);
-        if(categoryModelOptional.isPresent()){
-            categoryService.deleteCategory(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
