@@ -8,7 +8,7 @@ public class InvalidReferenceException extends RuntimeException {
     private final Long id;
 
     public InvalidReferenceException(String resourceType, Long id) {
-        super("Invalid reference for" + resourceType + " with id: " + id);
+        super("Invalid reference for " + resourceType + " with id: " + id);
         this.id = id;
         this.resourceType = resourceType;
     }

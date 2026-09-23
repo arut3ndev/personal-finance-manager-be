@@ -33,7 +33,7 @@ public class TransactionService {
 
     public TransactionModel saveTransaction(TransactionModel modelToSave, Long categoryId){
         if (categoryId != null){
-            CategoryModel categoryModel = categoryService.getCategoryById(categoryId);
+            CategoryModel categoryModel = categoryService.getReferenceCategoryById(categoryId);
             modelToSave.setCategory(categoryModel);
         }
         return repository.save(modelToSave);
@@ -48,7 +48,7 @@ public class TransactionService {
         transactionModel.setDate(modelToUpdate.getDate());
         transactionModel.setType(modelToUpdate.getType());
         if (categoryId != null){
-            CategoryModel categoryModel = categoryService.getCategoryById(categoryId);
+            CategoryModel categoryModel = categoryService.getReferenceCategoryById(categoryId);
             transactionModel.setCategory(categoryModel);
         }
         else transactionModel.setCategory(null);

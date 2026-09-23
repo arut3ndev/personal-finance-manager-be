@@ -1,5 +1,6 @@
 package org.example.personalfinancemanagerbe.services;
 
+import org.example.personalfinancemanagerbe.exceptions.InvalidReferenceException;
 import org.example.personalfinancemanagerbe.exceptions.NotFoundException;
 import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.repositories.CategoryRepository;
@@ -21,6 +22,14 @@ public class CategoryService {
         Optional<CategoryModel> categoryModelOptional = categoryRepository.findById(id);
         if(categoryModelOptional.isEmpty()){
             throw new NotFoundException("Category", id);
+        }
+        return categoryModelOptional.get();
+    }
+
+    public CategoryModel getReferenceCategoryById(Long id){
+        Optional<CategoryModel> categoryModelOptional = categoryRepository.findById(id);
+        if(categoryModelOptional.isEmpty()){
+            throw new InvalidReferenceException("Category", id);
         }
         return categoryModelOptional.get();
     }

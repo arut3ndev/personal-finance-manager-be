@@ -53,11 +53,13 @@ public class TransactionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> putTransaction(@PathVariable Long id, @Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
-        transactionService.getTransactionById(id);
-        TransactionModel transactionModel = transactionRequestDTO.toModel();
-        transactionModel.setId(id);
-        transactionModel = transactionService.saveTransaction(transactionModel, transactionRequestDTO.getCategoryId());
-        return ResponseEntity.ok(new TransactionResponseDTO(transactionModel));
+        return ResponseEntity.ok(new TransactionResponseDTO(
+            transactionService.updateTransaction(
+                id,
+                transactionRequestDTO.toModel(),
+                transactionRequestDTO.getCategoryId()
+            )
+        ));
     }
 
     @PutMapping("/{transactionId}/category/{categoryId}")
