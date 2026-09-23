@@ -3,6 +3,7 @@ package org.example.personalfinancemanagerbe.configs;
 import org.example.personalfinancemanagerbe.exceptions.ErrorResponse;
 import org.example.personalfinancemanagerbe.exceptions.InvalidReferenceException;
 import org.example.personalfinancemanagerbe.exceptions.NotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,6 +40,14 @@ public class GlobalExceptionHandler {
                 .toList();
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.validation(request.getRequestURI(), violations));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.warn("Data integrity violation on {} {}: {}",
+                request.getMethod(), request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+        return build(HttpStatus.CONFLICT,
+                "The request conflicts with existing data", request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

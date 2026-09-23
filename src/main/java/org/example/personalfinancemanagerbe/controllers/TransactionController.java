@@ -3,9 +3,7 @@ package org.example.personalfinancemanagerbe.controllers;
 import jakarta.validation.Valid;
 import org.example.personalfinancemanagerbe.dtos.TransactionRequestDTO;
 import org.example.personalfinancemanagerbe.dtos.TransactionResponseDTO;
-import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
-import org.example.personalfinancemanagerbe.services.CategoryService;
 import org.example.personalfinancemanagerbe.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,12 +61,9 @@ public class TransactionController {
     }
 
     @PutMapping("/{transactionId}/category/{categoryId}")
-    public ResponseEntity<Void> attachCategoryToTransaction(@PathVariable Long transactionId, @PathVariable Long categoryId){
-        TransactionModel updatedModel = transactionService.attachCategoryToTransaction(transactionId, categoryId);
-        if(updatedModel != null){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> attachCategoryToTransaction(@PathVariable Long transactionId, @PathVariable Long categoryId) {
+        transactionService.attachCategoryToTransaction(transactionId, categoryId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

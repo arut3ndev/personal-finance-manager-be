@@ -31,6 +31,7 @@ public class TransactionService {
         return repository.findAll();
     }
 
+    @Transactional
     public TransactionModel saveTransaction(TransactionModel modelToSave, Long categoryId){
         if (categoryId != null){
             CategoryModel categoryModel = categoryService.getReferenceCategoryById(categoryId);
@@ -56,11 +57,9 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionModel attachCategoryToTransaction(Long transactionId, Long categoryId){
-        TransactionModel transactionModel = getTransactionById(transactionId);
-        CategoryModel categoryModel = categoryService.getCategoryById(categoryId);
-        transactionModel.setCategory(categoryModel);
-        return repository.save(transactionModel);
+    public void attachCategoryToTransaction(Long transactionId, Long categoryId) {
+        TransactionModel transaction = getTransactionById(transactionId);
+        transaction.setCategory(categoryService.getReferenceCategoryById(categoryId));
     }
 
     public void deleteTransaction(Long id){
