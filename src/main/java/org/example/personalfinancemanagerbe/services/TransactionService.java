@@ -14,7 +14,7 @@ import java.util.Optional;
 public class TransactionService {
     private final TransactionRepository repository;
     private final CategoryService categoryService;
-    TransactionService(TransactionRepository repository, CategoryService categoryService){
+    public TransactionService(TransactionRepository repository, CategoryService categoryService){
         this.repository = repository;
         this.categoryService = categoryService;
     }
