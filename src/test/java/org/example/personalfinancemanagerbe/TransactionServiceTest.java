@@ -1,10 +1,12 @@
-package org.example.personalfinancemanagerbe.services;
+package org.example.personalfinancemanagerbe;
 
 import org.example.personalfinancemanagerbe.exceptions.InvalidReferenceException;
 import org.example.personalfinancemanagerbe.exceptions.NotFoundException;
 import org.example.personalfinancemanagerbe.models.CategoryModel;
 import org.example.personalfinancemanagerbe.models.TransactionModel;
 import org.example.personalfinancemanagerbe.repositories.TransactionRepository;
+import org.example.personalfinancemanagerbe.services.CategoryService;
+import org.example.personalfinancemanagerbe.services.TransactionService;
 import org.example.personalfinancemanagerbe.util.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
