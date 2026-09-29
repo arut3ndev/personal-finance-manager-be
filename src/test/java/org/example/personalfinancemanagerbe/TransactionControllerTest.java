@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,7 +124,15 @@ public class TransactionControllerTest {
                 .andExpect(jsonPath("$.message", is("Not found Transaction with id: 99")));
     }
 
-    // TODO: Post tests
+    @Test
+    public void testGetTransactionById_WrongIdType_ReturnsBadRequest() throws Exception{
+        mockMvc.perform(get("/api/transactions/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.path", is("/api/transactions/abc")))
+                .andExpect(jsonPath("$.message", is("Invalid value for parameter 'id'")));
+    }
+
+    // Testing POST /api/transactions
 
     @Test
     public void testPostTransaction_WithNoCategory_ReturnsOk() throws Exception{
@@ -285,8 +294,56 @@ public class TransactionControllerTest {
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message", is("Invalid reference for Category with id: 99")));
     }
+    // Testing PUT /api/transactions/{id}
 
-    // TODO: Put tests
-    // TODO: Delete tests
+    @Test
+    void putTransaction_returns200WithUpdatedBody() throws Exception {
+        when(transactionService.updateTransaction(eq(1L), any(), isNull()))
+                .thenReturn(transaction(1L, null));
 
+        mockMvc.perform(put("/api/transactions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(properJsonWithNoCategory))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transactionId").value(1))
+                .andExpect(jsonPath("$.description").value("groceries"));
+    }
+
+    @Test
+    void putTransaction_whenMissing_returns404() throws Exception {
+        when(transactionService.updateTransaction(eq(99L), any(), isNull()))
+                .thenThrow(new NotFoundException("Transaction", 99L));
+
+        mockMvc.perform(put("/api/transactions/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(properJsonWithNoCategory))
+                .andExpect(status().isNotFound());
+    }
+
+    // Testing DELETE /api/transactions/{id}
+
+    @Test
+    void deleteTransaction_returns204() throws Exception {
+        mockMvc.perform(delete("/api/transactions/1"))
+                .andExpect(status().isNoContent());
+
+        verify(transactionService).deleteTransaction(1L);
+    }
+
+    @Test
+    void deleteTransaction_whenMissing_returns404() throws Exception {
+        doThrow(new NotFoundException("Transaction", 99L))
+                .when(transactionService).deleteTransaction(99L);
+
+        mockMvc.perform(delete("/api/transactions/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    // Testing Routing
+
+    @Test
+    void routingTest_returns404() throws Exception{
+        mockMvc.perform(get("/not/a/proper/api"))
+                .andExpect(status().isNotFound());
+    }
 }
